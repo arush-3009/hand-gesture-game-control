@@ -4,3 +4,6 @@ venv/
 env/
 *.venv
 .venv/
+
+# workspace
+.idea
