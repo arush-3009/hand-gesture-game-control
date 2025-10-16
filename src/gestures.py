@@ -11,6 +11,7 @@ def get_hand_size(landmarks):
     return calc_distance(wrist, middle_base)
 
 def is_fist(landmarks, display_output=False, img=None):
+    if len(landmarks) == 0: return None
     wrist = landmarks[0]
     middle_finger_base = landmarks[9]
     hand_size = calc_distance(middle_finger_base, wrist)
@@ -36,6 +37,7 @@ def is_fist(landmarks, display_output=False, img=None):
 
 
 def is_open(landmarks, display_output=False, img=None):
+    if len(landmarks) == 0: return None
     wrist = landmarks[0]
     middle_finger_base = landmarks[9]
     hand_size = calc_distance(middle_finger_base, wrist)

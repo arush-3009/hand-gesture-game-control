@@ -21,9 +21,8 @@ while cap.isOpened():
 
     frame = detector.find_hands(frame)
     landmarks = detector.find_pos(frame)
-    if len(landmarks) != 0:
-        fist = gestures.is_fist(landmarks, display_output=True, img=frame)
-        open_hand = gestures.is_open(landmarks, display_output=True, img=frame)
+    fist = gestures.is_fist(landmarks, display_output=True, img=frame)
+    open_hand = gestures.is_open(landmarks, display_output=True, img=frame)
 
     cv2.imshow('Webcam', frame)
     if cv2.waitKey(1) & 0xff == ord('q'):
