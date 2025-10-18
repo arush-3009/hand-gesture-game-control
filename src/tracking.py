@@ -2,6 +2,15 @@
 # HandTracking using Mediapipe and OpenCV. Gives an easy and short way to use MediaPipe's hand tracking
 # """
 #
+
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
+import warnings
+warnings.filterwarnings('ignore')
+
+
 import cv2
 import mediapipe as mp
 import time
