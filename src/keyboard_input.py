@@ -17,6 +17,13 @@ class KeyboardController:
         self.pressed_keys = set()
         self.brake_state = None  # None, 'just_braking', or 'reversing'
         self.brake_start_time = 0
+        self.smooth_counters = {
+            'acceleration_gesture': 0,
+            'braking_reversing_gesture': 0,
+            'drifting_gesture': 0,
+            'nitro_gesture': 0
+        }
+        self.SMOOTH_THRESHOLD = 3
     
     def press_key(self, k):
         if k not in self.pressed_keys:
@@ -33,6 +40,9 @@ class KeyboardController:
             key = self.pressed_keys.pop()
             self.keyboard.release(key)
         self.brake_state = None
+
+        for key in self.smooth_counters:
+            self.smooth_counters[key] = 0
 
     #steering
     def handle_steering(self, steering_direction):
@@ -54,13 +64,27 @@ class KeyboardController:
     #accelarating
     def handle_acceleration(self, gesture_active):
         if gesture_active:
+
+            self.release_key('s')
+            self.smooth_counters['braking_reversing_gesture'] = 0
+            self.smooth_counters['drifting_gesture'] = 0
+
+            self.smooth_counters['acceleration_gesture'] = self.SMOOTH_THRESHOLD
             self.press_key('w')
         else:
-            self.release_key('w')
+            self.smooth_counters['acceleration_gesture'] -= 1
+            if self.smooth_counters['acceleration_gesture'] <= 0:
+                self.release_key('w')
+                self.smooth_counters['acceleration_gesture'] = 0
 
 
     def handle_braking(self, gesture_activate):
         if gesture_activate:
+
+            self.release_key('w')
+            self.smooth_counters['acceleration_gesture'] = 0
+
+            self.smooth_counters['braking_reversing_gesture'] = self.SMOOTH_THRESHOLD
             # check if first time braking
             if self.brake_state == None:
                 self.brake_state = 'just_braking'
@@ -80,27 +104,42 @@ class KeyboardController:
             self.press_key('s')
 
         else:
-            #Release brake
-            self.release_key('s')
-            #Reset state to None
-            self.brake_state = None
+            self.smooth_counters['braking_reversing_gesture'] -= 1
+            if self.smooth_counters['braking_reversing_gesture'] <= 0:
+                #Release brake
+                self.release_key('s')
+                #Reset state to None
+                self.brake_state = None
+                self.smooth_counters['braking_reversing_gesture'] = 0
 
 
 
     #nitro
     def handle_nitro(self, gesture_active):
         if gesture_active:
+            self.smooth_counters['nitro_gesture'] = self.SMOOTH_THRESHOLD
             self.press_key('n')
         else:
-            self.release_key('n')
+            self.smooth_counters['nitro_gesture'] -= 1
+            if self.smooth_counters['nitro_gesture'] <= 0:
+                self.release_key('n')
+                self.smooth_counters['nitro_gesture'] = 0
 
     
     #drifiting
     def handle_drift(self, gesture_active):
         if gesture_active:
+
+            self.release_key('w')
+            self.smooth_counters['acceleration_gesture'] = 0
+
+            self.smooth_counters['drifting_gesture'] = self.SMOOTH_THRESHOLD
             self.press_key('s')
         else:
-            self.release_key('s')
+            self.smooth_counters['drifting_gesture'] -= 1
+            if self.smooth_counters['drifting_gesture'] <= 0:
+                self.release_key('s')
+                self.smooth_counters['drifting_gesture'] = 0
 
 
     
