@@ -25,8 +25,10 @@ class KeyboardController:
         }
         if config is None:
             self.SMOOTH_THRESHOLD = 3
+            self.brake_to_reverse_delay = 1.50
         else:
             self.SMOOTH_THRESHOLD = config.get('gestures', 'smoothing_threshold')
+            self.brake_to_reverse_delay = config.get('gestures', 'brake_to_reverse_delay')
     
     def press_key(self, k):
         if k not in self.pressed_keys:
@@ -101,7 +103,7 @@ class KeyboardController:
                 curr_time = time.time()
                 elapsed_time = curr_time - self.brake_start_time
 
-                if elapsed_time >= 1.50:
+                if elapsed_time >= self.brake_to_reverse_delay:
                     self.brake_state = 'reversing'
             
             self.press_key('s')
