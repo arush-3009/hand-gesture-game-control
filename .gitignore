@@ -10,4 +10,4 @@ env/
 __pycache__
 
 #testing
-testing.py
+finger_tip_distance_ratio_testing.py
