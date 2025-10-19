@@ -46,7 +46,7 @@ while cap.isOpened():
     landmarks = detector.find_pos(frame)
 
     if landmarks:
-        # Detect all gestures
+
         steering_direction = gestures.get_steering_direction(landmarks, display_output=True, img=frame)
         fist = gestures.is_fist(landmarks, display_output=True, img=frame)
         open_hand = gestures.is_open(landmarks, display_output=True, img=frame)
@@ -75,10 +75,8 @@ while cap.isOpened():
         key_control.handle_nitro(index)
     
     else:
-        # No hand detected - release everything
         key_control.release_all_keys()
 
-    # Calculate and display FPS
     curr_time = time.time()
     fps = int(1/(curr_time - prev_time)) if prev_time > 0 else 0
     prev_time = curr_time
