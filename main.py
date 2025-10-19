@@ -1,16 +1,12 @@
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-
-import warnings
-warnings.filterwarnings('ignore')
-
 import mediapipe as mp
 import cv2
 import time
+import sys
 
 from src import gestures, tracking, keyboard_input
 
+DEBUG_MODE = True
+sys.stdout = open('results.txt', 'w')
 
 cap = cv2.VideoCapture(0)
 if not cap.isOpened():
@@ -53,6 +49,13 @@ while cap.isOpened():
         v = gestures.is_v(landmarks, display_output=True, img=frame)
         index = gestures.is_index_pointing(landmarks, display_output=True, img=frame)
 
+        if DEBUG_MODE:
+            print('-' * 60)
+            print(f'Open Hand - {open_hand}  ;  Fist - {fist}  ;  V - {v}  ;  index - {index}  ;  direction - {steering_direction}')
+            print(f'Set of pressed keys  -  {key_control.pressed_keys}')
+            print(f'Brake State  -  {key_control.brake_state}')
+            print()
+
         # Handle controls with priority
         # Priority 1: Drift (V sign) - overrides brake
         if v:
@@ -78,7 +81,7 @@ while cap.isOpened():
         key_control.release_all_keys()
 
     curr_time = time.time()
-    fps = int(1/(curr_time - prev_time)) if prev_time > 0 else 0
+    fps = int(1/(curr_time - prev_time))
     prev_time = curr_time
     cv2.putText(frame, f'FPS: {fps}', (50, 100), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0), 2)
 
@@ -90,4 +93,3 @@ while cap.isOpened():
 
 cap.release()
 cv2.destroyAllWindows()
-print('👋 Goodbye! Drive safe!')
