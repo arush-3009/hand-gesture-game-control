@@ -34,6 +34,22 @@ class KeyboardController:
             self.keyboard.release(key)
         self.brake_state = None
 
+    #steering
+    def handle_steering(self, steering_direction):
+        if self.brake_state == 'just_braking': 
+            self.release_key('a')
+            self.release_key('d')
+        else:
+            if steering_direction == 'left':
+                self.release_key('d')
+                self.press_key('a')
+            elif steering_direction == "right":
+                self.release_key('a')
+                self.press_key('d')
+            else:
+                self.release_key('a')
+                self.release_key('d')
+
 
     #accelarating
     def handle_acceleration(self, gesture_active):
@@ -44,13 +60,12 @@ class KeyboardController:
 
 
     def handle_braking(self, gesture_activate):
-
         if gesture_activate:
-            # First time braking?
+            # check if first time braking
             if self.brake_state == None:
                 self.brake_state = 'just_braking'
                 self.brake_start_time = time.time()
-                # KEPT: Release steering when starting to brake
+                # Release steering when starting to brake
                 self.release_key('a')
                 self.release_key('d')
             
@@ -61,15 +76,13 @@ class KeyboardController:
 
                 if elapsed_time >= 1.50:
                     self.brake_state = 'reversing'
-                # REMOVED: else block that was releasing A/D every frame!
             
-            # KEPT: Always press S when braking
             self.press_key('s')
 
         else:
-            # KEPT: Release brake
+            #Release brake
             self.release_key('s')
-            # KEPT: Reset state
+            #Reset state to None
             self.brake_state = None
 
 
@@ -90,21 +103,7 @@ class KeyboardController:
             self.release_key('s')
 
 
-    #steering
-    def handle_steering(self, steering_direction):
-        if self.brake_state == 'just_braking': 
-            self.release_key('a')
-            self.release_key('d')
-        else:
-            if steering_direction == 'left':
-                self.release_key('d')
-                self.press_key('a')
-            elif steering_direction == "right":
-                self.release_key('a')
-                self.press_key('d')
-            else:
-                self.release_key('a')
-                self.release_key('d')
+    
 
 
         
