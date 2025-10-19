@@ -78,8 +78,8 @@ def get_steering_direction(landmarks, display_output=False, img=None):
     if len(landmarks) == 0: return 'center'
     x = landmarks[0].x
     
-    LEFT_THRESHOLD = 0.35
-    RIGHT_THRESHOLD = 0.65
+    LEFT_THRESHOLD = 0.40
+    RIGHT_THRESHOLD = 0.60
 
     direction = None
 
