@@ -8,3 +8,6 @@ env/
 # workspace
 .idea
 __pycache__
+
+#testing
+testing.py
