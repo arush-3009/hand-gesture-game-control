@@ -1,95 +1,122 @@
-import mediapipe as mp
 import cv2
 import time
-import sys
 
 from src import gestures, tracking, keyboard_input
+from src.config import Config
+from src.display import DisplayManager
 
-DEBUG_MODE = True
-sys.stdout = open('results.txt', 'w')
+# Load configuration
+config = Config('config.yml')
 
-cap = cv2.VideoCapture(0)
+# Initialize components
+cap = cv2.VideoCapture(config.get('camera', 'device_id'))
 if not cap.isOpened():
-    raise OSError("Cannot access Webcam.")
+    raise OSError("Cannot access webcam")
 
-cap.set(3, 640)
-cap.set(4, 480)
+cap.set(3, config.get('camera', 'width'))
+cap.set(4, config.get('camera', 'height'))
 
 detector = tracking.HandDetector()
-key_control = keyboard_input.KeyboardController()
+key_control = keyboard_input.KeyboardController(config=config)
+display = DisplayManager(config)
 
-curr_time = 0
+
+# FPS tracking
 prev_time = 0
 
-print('*' * 15 + ' STARTING GAME CONTROL ' + '*' * 15)
-print('Show open hand to accelerate (W)')
-print('Move hand left/right to steer (A/D)')
-print('Make fist to brake/reverse (S)')
-print('Show V sign to drift (S + A/D)')
-print('Point index finger for nitro (N)')
-print("Press 'q' to quit")
+print('=' * 60)
+print(' ' * 15 + 'HAND GESTURE GAME CONTROL')
+print('=' * 60)
+print('\nControls:')
+print('  • Open hand          → Accelerate (W)')
+print('  • Move hand L/R      → Steer (A/D)')
+print('  • Make fist          → Brake/Reverse (S)')
+print('  • V sign             → Drift (S)')
+print('  • Point index finger → Nitro (N)')
+print('\nPress "q" to quit')
+print('=' * 60)
 print()
 
-while cap.isOpened():
-
-    ret, frame = cap.read()
-    if not ret:
-        print('Webcam feed ended/disrupted.')
-        break
-
-    frame = cv2.flip(frame, 1)
-    frame = detector.find_hands(frame)
-    landmarks = detector.find_pos(frame)
-
-    if landmarks:
-
-        steering_direction = gestures.get_steering_direction(landmarks, display_output=True, img=frame)
-        fist = gestures.is_fist(landmarks, display_output=True, img=frame)
-        open_hand = gestures.is_open(landmarks, display_output=True, img=frame)
-        v = gestures.is_v(landmarks, display_output=True, img=frame)
-        index = gestures.is_index_pointing(landmarks, display_output=True, img=frame)
-
-        if DEBUG_MODE:
-            print('-' * 60)
-            print(f'Open Hand - {open_hand}  ;  Fist - {fist}  ;  V - {v}  ;  index - {index}  ;  direction - {steering_direction}')
-            print(f'Set of pressed keys  -  {key_control.pressed_keys}')
-            print(f'Brake State  -  {key_control.brake_state}')
-            print()
-
-        # Handle controls with priority
-        # Priority 1: Drift (V sign) - overrides brake
-        if v:
-            key_control.handle_drift(True)
-        else:
-            key_control.handle_drift(False)
-            # Priority 2: Brake/Reverse (only if not drifting)
-            if fist:
-                key_control.handle_braking(True)
+try:
+    while cap.isOpened():
+        
+        ret, frame = cap.read()
+        if not ret:
+            print('Webcam feed ended')
+            break
+        
+        
+        frame = cv2.flip(frame, 1)
+        
+       
+        frame = detector.find_hands(frame, draw=False)  # Don't draw on frame
+        landmarks = detector.find_pos(frame)
+        
+        
+        gestures_data = {
+            'open_hand': False,
+            'fist': False,
+            'v': False,
+            'index': False,
+            'steering_direction': 'center'
+        }
+        hand_x = None
+        
+        if landmarks:
+            
+            gestures_data['open_hand'] = gestures.is_open(landmarks)
+            gestures_data['fist'] = gestures.is_fist(landmarks)
+            gestures_data['v'] = gestures.is_v(landmarks)
+            gestures_data['index'] = gestures.is_index_pointing(landmarks)
+            gestures_data['steering_direction'] = gestures.get_steering_direction(landmarks)
+            
+            
+            hand_x = landmarks[0].x
+            
+            # Handle controls
+            if gestures_data['v']:
+                key_control.handle_drift(True)
             else:
-                key_control.handle_braking(False)
+                key_control.handle_drift(False)
+                if gestures_data['fist']:
+                    key_control.handle_braking(True)
+                else:
+                    key_control.handle_braking(False)
+            
+            key_control.handle_acceleration(gestures_data['open_hand'])
+            key_control.handle_steering(gestures_data['steering_direction'])
+            key_control.handle_nitro(gestures_data['index'])
+        else:
+            # No hand detected
+            key_control.release_all_keys()
         
-        # Priority 3: Acceleration (independent)
-        key_control.handle_acceleration(open_hand)
         
-        # Priority 4: Steering (works with acceleration, reversing; blocked during brake/drift)
-        key_control.handle_steering(steering_direction)
+        curr_time = time.time()
+        fps = int(1 / (curr_time - prev_time)) if prev_time > 0 else 0
+        prev_time = curr_time
         
-        # Priority 5: Nitro (independent)
-        key_control.handle_nitro(index)
-    
-    else:
-        key_control.release_all_keys()
+        # Render display (with or without webcam based on mode)
+        display_frame = display.render(
+            webcam_frame=frame,
+            fps=fps,
+            gestures=gestures_data,
+            hand_x_position=hand_x,
+            pressed_keys=key_control.pressed_keys
+        )
+        
+        
+        display.show(display_frame)
+        
+        # Check for quit
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            print('\nExiting...')
+            break
 
-    curr_time = time.time()
-    fps = int(1/(curr_time - prev_time))
-    prev_time = curr_time
-    cv2.putText(frame, f'FPS: {fps}', (50, 100), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 0), 2)
+except KeyboardInterrupt:
+    print('\nInterrupted by user')
 
-    cv2.imshow('Asphalt Hand Control', frame)
-    if cv2.waitKey(1) & 0xff == ord('q'):
-        print('Webcam feed ended. EXITING...')
-        key_control.release_all_keys()
-        break
-
-cap.release()
-cv2.destroyAllWindows()
+finally:
+    key_control.release_all_keys()
+    cap.release()
+    display.cleanup()
+    print('Cleanup complete')

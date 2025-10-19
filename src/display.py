@@ -52,10 +52,8 @@ class DisplayManager:
             Canvas to draw on (numpy array)
         """
         if self.mode == 'webcam' and webcam_frame is not None:
-            # Use webcam frame as background
             canvas = webcam_frame.copy()
         else:
-            # Create black background
             canvas = np.zeros((self.height, self.width, 3), dtype=np.uint8)
         
         return canvas

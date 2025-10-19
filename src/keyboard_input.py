@@ -12,7 +12,7 @@ import time
 
 class KeyboardController:
 
-    def __init__(self):
+    def __init__(self, config=None):
         self.keyboard = Controller()
         self.pressed_keys = set()
         self.brake_state = None  # None, 'just_braking', or 'reversing'
@@ -23,7 +23,10 @@ class KeyboardController:
             'drifting_gesture': 0,
             'nitro_gesture': 0
         }
-        self.SMOOTH_THRESHOLD = 3
+        if config is None:
+            self.SMOOTH_THRESHOLD = 3
+        else:
+            self.SMOOTH_THRESHOLD = config.get('gestures', 'smoothing_threshold')
     
     def press_key(self, k):
         if k not in self.pressed_keys:
