@@ -74,12 +74,16 @@ def is_open(landmarks, display_output=False, img=None):
     return ret
 
 
-def get_steering_direction(landmarks, display_output=False, img=None):
+def get_steering_direction(landmarks, config=None, display_output=False, img=None):
     if len(landmarks) == 0: return 'center'
     x = landmarks[0].x
     
-    LEFT_THRESHOLD = 0.40
-    RIGHT_THRESHOLD = 0.60
+    if config is None:
+        LEFT_THRESHOLD = 0.40
+        RIGHT_THRESHOLD = 0.60
+    else:
+        LEFT_THRESHOLD = config.get('gestures', 'left_threshold')
+        RIGHT_THRESHOLD = config.get('gestures', 'right_threshold')
 
     direction = None
 
@@ -150,39 +154,3 @@ def is_v(landmarks, display_output=False, img=None):
         cv2.putText(img, f'V showing: {ret}', (50, 350), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 255), 2)
         
     return ret
-
-
-
-# def is_thumbs_up(landmarks, display_output=False, img=None):
-#     if len(landmarks) == 0: return None
-
-#     ret = True
-
-#     hand_size = get_hand_size(landmarks)
-#     wrist = landmarks[0]
-#     thumb_tip = landmarks[4]
-
-#     y_distance = wrist.y - thumb_tip.y
-#     y_ratio = y_distance/hand_size
-
-#     if y_ratio < 2.0: 
-#         ret = False
-#     else:
-    
-#         tips_and_thresholds = {8: 1.3, 12: 1.1, 16: 0.9, 20: 0.9}
-
-#         for fingertip in tips_and_thresholds:
-#             dist = calc_distance(wrist, landmarks[fingertip])
-#             ratio = dist/hand_size
-#             if ratio > tips_and_thresholds[fingertip]:
-#                 ret = False
-#                 break
-
-#     if display_output:
-#         if img is None:
-#             raise ValueError("img required when display_output=True")
-#         cv2.putText(img, f'Thumbs Up: {ret}', (50, 400), 
-#                     cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 255), 2)
-
-#     return ret
-        
