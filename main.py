@@ -1,7 +1,3 @@
-import cv2
-import time
-
-from src import camera, config, display, gestures, keyboard_input, tracking
 from src.game_control import GameController
 
 print('=' * 60)
