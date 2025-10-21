@@ -18,7 +18,7 @@ gestures:
   brake_to_reverse_delay: 1.50
 
 display:
-  mode: "info_only"   #Options: "info_only" or "webcam"
+  mode: "webcam"   #Options: "info_only" or "webcam"
   show_fps: true
   show_gesture_table: true
   show_steering_bars: true
