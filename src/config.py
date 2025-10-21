@@ -4,7 +4,7 @@ import os
 
 class Config:
 
-    def __init__(self, config_file="../config.yaml"):
+    def __init__(self, config_file="config.yml"):
         self.config_file = config_file
         self.config = self.load_config()
 
@@ -36,13 +36,15 @@ class Config:
             "gestures": {
                 "left_threshold": 0.40,
                 "right_threshold": 0.60,
-                "smooth_threshold": 3,
+                "smoothing_threshold": 3,
                 "brake_to_reverse_delay": 1.5
             },
             "display": {
+                "mode": "info_only",
                 "show_fps": True,
-                "show_landmarks": True,
-                "show_gesture_labels": True,
+                "show_gesture_table": True,
+                "show_steering_bars": True,
+                "show_keys": True,
                 "window_name": "Asphalt Hand Control"
             },
             "debug": {
