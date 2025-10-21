@@ -124,14 +124,16 @@ class KeyboardController:
 
     
     #drifiting
-    def handle_drift(self, gesture_active):
+    def handle_drift(self, gesture_active, steering_direction):
         if gesture_active:
 
             self.release_key('w')
             self.smooth_counters['acceleration_gesture'] = 0
 
             self.smooth_counters['drifting_gesture'] = self.SMOOTH_THRESHOLD
-            self.press_key('s')
+
+            if steering_direction == 'left' or steering_direction == 'right':
+                self.press_key('s')
         else:
             self.smooth_counters['drifting_gesture'] -= 1
             if self.smooth_counters['drifting_gesture'] <= 0:

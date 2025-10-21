@@ -24,9 +24,9 @@ class GameController:
         
             # Hand detected
             if self.gesture_tracker.gestures_data['v']:
-                self.keyboard_control.handle_drift(True)
+                self.keyboard_control.handle_drift(True, self.gesture_tracker.gestures_data['steering_direction'])
             else:
-                self.keyboard_control.handle_drift(False)
+                self.keyboard_control.handle_drift(False, self.gesture_tracker.gestures_data['steering_direction'])
                 if self.gesture_tracker.gestures_data['fist']:
                     self.keyboard_control.handle_braking(True)
                 else:
