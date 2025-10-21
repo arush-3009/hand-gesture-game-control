@@ -269,7 +269,7 @@ class DisplayManager:
             # Draw hand emoji/text
             cv2.putText(
                 canvas,
-                '👋',
+                'H',
                 (indicator_x - 10, indicator_y + 5),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.5,
@@ -304,7 +304,7 @@ class DisplayManager:
             2
         )
     
-    def render(self, webcam_frame, fps, gestures, hand_x_position, pressed_keys):
+    def render(self, webcam_frame, fps, gestures, pressed_keys):
         """
         Render complete display with all elements
         
@@ -312,7 +312,6 @@ class DisplayManager:
             webcam_frame: Camera frame (can be None in info_only mode)
             fps: Current FPS
             gestures: Dict with all gesture states
-            hand_x_position: Hand's x position (0.0-1.0) or None
             pressed_keys: Set of pressed keys
             
         Returns:
@@ -326,7 +325,7 @@ class DisplayManager:
         self.draw_gesture_table(canvas, gestures)
         self.draw_steering_bars(
             canvas,
-            hand_x_position,
+            gestures.get('hand_x'),
             gestures.get('steering_direction', 'center')
         )
         self.draw_keys(canvas, pressed_keys)
