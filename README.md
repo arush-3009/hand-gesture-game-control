@@ -38,7 +38,7 @@ A Python application that uses computer vision to detect hand gestures via webca
 ### Installation
 ```bash
 # Clone repository
-git clone 
+git clone https://github.com/arush-3009/hand-gesture-game-control.git
 cd hand-gesture-game-control
 
 # Install dependencies
