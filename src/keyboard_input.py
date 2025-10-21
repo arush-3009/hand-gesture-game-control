@@ -12,7 +12,7 @@ import time
 
 class KeyboardController:
 
-    def __init__(self, config=None):
+    def __init__(self, config):
         self.keyboard = Controller()
         self.pressed_keys = set()
         self.brake_state = None  # None, 'just_braking', or 'reversing'
