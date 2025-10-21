@@ -12,3 +12,6 @@ __pycache__
 #testing
 finger_tip_distance_ratio_testing.py
 results.txt
+
+#macOS
+**/.DS_Store
