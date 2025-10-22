@@ -27,7 +27,7 @@ A Python application that uses computer vision to detect hand gestures via webca
 | Point Index           | Nitro Boost       |  N  |
 | 👈👉 Hand Left/Right  | Steer             | A/D |
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -73,7 +73,7 @@ display:
   mode: "webcam"  # or "info_only" for better performance
 ```
 
-## 📊 Display Modes
+## Display Modes
 
 ### Webcam Mode
 - See your hand and camera feed
@@ -86,14 +86,14 @@ display:
 - Steering visualization
 - Best for competitive play
 
-## 🎮 Supported Games
+## Supported Games
 
 Tested with:
 - ✅ Asphalt 8: Airborne
 - ✅ Asphalt 9: Legends
 - ✅ Any game using WASD + N controls
 
-## 🏗️ Architecture
+## Architecture
 ```
 Project/
 ├── src/
@@ -108,7 +108,7 @@ Project/
 └── config.yml             # Settings
 ```
 
-## 🔬 How It Works
+## How It Works
 
 1. **MediaPipe** detects 21 hand landmarks per frame
 2. **Gesture algorithms** analyze landmark positions and ratios
@@ -123,7 +123,7 @@ fingertip_distances = [tip - wrist for tip in fingertips]
 is_open = all(distance > threshold * hand_size)
 ```
 
-## 🎓 Technical Highlights
+## Technical Highlights
 
 - **Object-Oriented Design** - Clean separation of concerns
 - **Config-Driven** - YAML configuration with safe defaults
@@ -131,7 +131,7 @@ is_open = all(distance > threshold * hand_size)
 - **Error Handling** - Graceful failure with user feedback
 - **Performance** - 30+ FPS with minimal CPU usage
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 **Gestures not detected?**
 - Ensure good lighting
@@ -148,7 +148,7 @@ is_open = all(distance > threshold * hand_size)
 - Check game is focused
 - Verify game uses WASD+N controls
 
-## 📈 Future Enhancements
+## Future Enhancements
 
 - [ ] Two-hand mode (separate steering/controls)
 - [ ] Machine learning for custom gestures
@@ -157,6 +157,6 @@ is_open = all(distance > threshold * hand_size)
 - [ ] Performance statistics dashboard
 
 
-## 📝 License
+## License
 
 MIT License - see [LICENSE](LICENSE) file for details
